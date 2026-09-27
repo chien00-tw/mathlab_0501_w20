@@ -1,0 +1,1647 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>校定課程-數感實驗室：偵探結業式</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- QRCode.js CDN for dynamic QR Code generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <!-- Google Fonts: Inter & Noto Sans TC -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Noto+Sans+TC:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              navy: '#0F172A',
+              blue: '#1E3A8A',
+              lightBlue: '#3B82F6',
+              amber: '#D97706',
+              gold: '#F59E0B',
+              bgLight: '#F8FAFC',
+              card: '#FFFFFF'
+            }
+          },
+          fontFamily: {
+            sans: ['"Noto Sans TC"', 'Inter', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* 國小高年級 iPad 專用觸控優化 */
+    * {
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    input, textarea, select {
+      user-select: text;
+    }
+    /* 下拉選單展開時字體純白背景深色字，確保清晰可見 */
+    select option {
+      background-color: #ffffff;
+      color: #0f172a;
+      font-weight: 700;
+      font-size: 16px;
+    }
+    /* 隱藏滾動條但保持滾動 */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    /* 脈衝動態效果 */
+    @keyframes pulse-ring {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.05); opacity: 1; }
+      100% { transform: scale(0.95); opacity: 0.8; }
+    }
+    .pulse-urgent {
+      animation: pulse-ring 1s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col antialiased">
+
+  <!-- 頂部固定導覽列 (Sticky Header) -->
+  <header class="sticky top-0 z-40 bg-slate-900/95 backdrop-blur-md text-white border-b border-slate-700 shadow-md">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-2">
+      
+      <!-- 主標題與版本號 (正右側水平並列) -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-300 flex items-center justify-center text-slate-950 font-black shadow-md shadow-amber-500/30">
+          <i class="fa-solid fa-graduation-cap text-xl"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-lg sm:text-2xl font-black tracking-wide text-white">偵探結業式</h1>
+            <!-- 版本控制編號 (位於主標題正右側，疊加至 v1.7.0) -->
+            <span id="version-tag" class="inline-block bg-amber-500/20 text-amber-300 border border-amber-400/40 text-xs sm:text-sm font-bold px-2 py-0.5 rounded-full">
+              v1.7.0
+            </span>
+          </div>
+          <p class="text-[11px] sm:text-xs text-slate-400">數感實驗室・五年級校定課程學期總結</p>
+        </div>
+      </div>
+
+      <!-- 固定分頁切換列 (固定在主標題右側位置，不捲動) -->
+      <nav class="flex items-center gap-1.5 sm:gap-2 bg-slate-800/90 p-1 rounded-2xl border border-slate-700" id="fixed-nav-tabs">
+        <button onclick="switchTab('tab-review')" id="btn-tab-review" class="tab-btn active px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-base font-bold transition-all flex items-center gap-1.5 bg-amber-500 text-slate-950 shadow-md">
+          <i class="fa-solid fa-map-location-dot"></i>
+          <span>探究回顧</span>
+        </button>
+        <button onclick="switchTab('tab-challenge')" id="btn-tab-challenge" class="tab-btn px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-base font-bold transition-all flex items-center gap-1.5 text-slate-300 hover:text-white hover:bg-slate-700/60">
+          <i class="fa-solid fa-stopwatch-20"></i>
+          <span>結業大挑戰</span>
+        </button>
+        <button onclick="switchTab('tab-reflection')" id="btn-tab-reflection" class="tab-btn px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-base font-bold transition-all flex items-center gap-1.5 text-slate-300 hover:text-white hover:bg-slate-700/60">
+          <i class="fa-solid fa-award"></i>
+          <span>4F成果與證書</span>
+        </button>
+      </nav>
+
+      <!-- 頂部純圖示控制鍵 (順序：① QR Code ➔ ② 全螢幕 ➔ ③ 課程指引，懸停具備 Tooltip) -->
+      <div class="flex items-center gap-2">
+        
+        <!-- ① QR Code 掃碼連結 [QR Icon] -->
+        <div class="relative group">
+          <button onclick="openQrModal()" id="btn-header-qr" aria-label="QR Code 掃碼連結" class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700 flex items-center justify-center transition active:scale-95 shadow">
+            <i class="fa-solid fa-qrcode text-lg"></i>
+          </button>
+          <div class="absolute right-0 top-12 hidden group-hover:flex bg-slate-900 text-amber-300 text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-amber-500/30 whitespace-nowrap shadow-xl z-50 pointer-events-none">
+            QR Code 掃碼連結 (iPad 直接開)
+          </div>
+        </div>
+
+        <!-- ② 全螢幕 toggle [Maximize Icon] -->
+        <div class="relative group">
+          <button onclick="toggleFullScreen()" id="fullscreen-btn" aria-label="切換全螢幕" class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-slate-800 hover:bg-slate-700 text-blue-400 border border-slate-700 flex items-center justify-center transition active:scale-95 shadow">
+            <i class="fa-solid fa-expand text-lg" id="fullscreen-icon"></i>
+          </button>
+          <div class="absolute right-0 top-12 hidden group-hover:flex bg-slate-900 text-blue-300 text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-blue-500/30 whitespace-nowrap shadow-xl z-50 pointer-events-none">
+            全螢幕切換
+          </div>
+        </div>
+
+        <!-- ③ 課程指引 [Book Icon] -->
+        <div class="relative group">
+          <button onclick="openGuideModal()" id="btn-header-guide" aria-label="課程指引功能鍵" class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-slate-700 flex items-center justify-center transition active:scale-95 shadow">
+            <i class="fa-solid fa-book-open text-lg"></i>
+          </button>
+          <div class="absolute right-0 top-12 hidden group-hover:flex bg-slate-900 text-emerald-300 text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-emerald-500/30 whitespace-nowrap shadow-xl z-50 pointer-events-none">
+            課程設計說明
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- 學生基本資料設定欄 (大字體選單、五年一班到十四班、座號1到28號，預設：五年一班28號野比大雄) -->
+  <section class="bg-white border-b border-slate-200 px-4 py-2.5 shadow-sm">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      
+      <div class="flex items-center gap-2 text-slate-700 font-bold text-sm sm:text-base">
+        <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-blue-100 text-blue-700">
+          <i class="fa-solid fa-id-card-clip"></i>
+        </span>
+        <span>偵探身分登記：</span>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2 sm:gap-4 flex-1 max-w-3xl">
+        <!-- 班級選單 (五年一班 ~ 五年十四班) -->
+        <div class="flex items-center gap-1.5">
+          <label for="select-class" class="text-xs sm:text-sm font-semibold text-slate-600">班級</label>
+          <select id="select-class" onchange="updateProfile()" class="bg-slate-50 border-2 border-slate-300 text-slate-800 text-sm sm:text-base font-bold rounded-xl px-2.5 py-1.5 focus:outline-none focus:border-blue-600 transition">
+            <!-- 程式動態生成 五年一班 ~ 五年十四班 -->
+          </select>
+        </div>
+
+        <!-- 座號選單 (1 號 ~ 28 號) -->
+        <div class="flex items-center gap-1.5">
+          <label for="select-seat" class="text-xs sm:text-sm font-semibold text-slate-600">座號</label>
+          <select id="select-seat" onchange="updateProfile()" class="bg-slate-50 border-2 border-slate-300 text-slate-800 text-sm sm:text-base font-bold rounded-xl px-2.5 py-1.5 focus:outline-none focus:border-blue-600 transition">
+            <!-- 程式動態生成 1~28 號 -->
+          </select>
+        </div>
+
+        <!-- 姓名輸入框 (預設：野比大雄) -->
+        <div class="flex items-center gap-1.5 flex-1 min-w-[140px]">
+          <label for="input-name" class="text-xs sm:text-sm font-semibold text-slate-600">姓名</label>
+          <input type="text" id="input-name" value="野比大雄" oninput="updateProfile()" class="w-full bg-slate-50 border-2 border-slate-300 text-slate-800 text-sm sm:text-base font-bold rounded-xl px-3 py-1.5 focus:outline-none focus:border-blue-600 transition" placeholder="輸入姓名">
+        </div>
+
+        <!-- 小組組別 -->
+        <div class="flex items-center gap-1.5">
+          <label for="select-group" class="text-xs sm:text-sm font-semibold text-slate-600">小組</label>
+          <select id="select-group" onchange="updateProfile()" class="bg-slate-50 border-2 border-slate-300 text-slate-800 text-sm sm:text-base font-bold rounded-xl px-2.5 py-1.5 focus:outline-none focus:border-blue-600 transition">
+            <option value="第 1 偵探分隊" selected>第 1 隊</option>
+            <option value="第 2 偵探分隊">第 2 隊</option>
+            <option value="第 3 偵探分隊">第 3 隊</option>
+            <option value="第 4 偵探分隊">第 4 隊</option>
+            <option value="第 5 偵探分隊">第 5 隊</option>
+            <option value="第 6 偵探分隊">第 6 隊</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 即時偵探徽章成就指示器 -->
+      <div class="hidden md:flex items-center gap-2 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-xl">
+        <i class="fa-solid fa-shield-halved text-amber-500 text-lg"></i>
+        <div class="text-xs">
+          <span class="text-slate-500">當前認證：</span>
+          <span id="badge-title-header" class="font-bold text-amber-700">特級數感偵探</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 主內容容器 -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6 space-y-6">
+
+    <!-- ==================== 分頁一：活動一 探究回顧 ==================== -->
+    <section id="tab-review" class="tab-content block space-y-6">
+      
+      <!-- 導引橫幅 -->
+      <div class="bg-gradient-to-r from-blue-900 to-indigo-900 text-white rounded-3xl p-5 sm:p-7 shadow-lg border border-blue-800 relative overflow-hidden">
+        <div class="relative z-10 max-w-3xl space-y-2">
+          <span class="inline-flex items-center gap-1.5 bg-blue-500/30 text-blue-200 border border-blue-400/30 text-xs sm:text-sm font-bold px-3 py-1 rounded-full">
+            <i class="fa-solid fa-flag-checkered"></i> 活動一：學期數感回顧
+          </span>
+          <h2 class="text-2xl sm:text-3xl font-black">20週偵探破案歷程・榮耀回顧</h2>
+          <p class="text-blue-100 text-sm sm:text-base leading-relaxed">
+            數感偵探們！回顧這學期我們跨越的因數倍數、質數篩選、線對稱圖騰、消失領地的面積分割，以及 Google Earth 經緯度怪盜追緝。點擊下方單元卡牌，提取你最有成就感的一場解謎任務！
+          </p>
+        </div>
+        <i class="fa-solid fa-compass text-blue-700/30 text-9xl absolute -right-6 -bottom-8 pointer-events-none"></i>
+      </div>
+
+      <!-- 學期單元回顧選擇器 (點擊卡牌即選定最深刻任務) -->
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg sm:text-xl font-bold text-slate-800 flex items-center gap-2">
+            <i class="fa-solid fa-map text-amber-500"></i>
+            <span>選出本學期你最深刻的一個單元：</span>
+          </h3>
+          <span class="text-xs sm:text-sm text-slate-500 font-semibold">點選即時帶入反思</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4" id="unit-cards-container">
+          <!-- 卡牌 1: 質數與倍數 -->
+          <div onclick="selectUnit(this, '數字的密碼與質數牆', 'W3-6 因倍數、公倍數混色、埃氏篩法質數牆')" class="unit-card cursor-pointer bg-white p-4 rounded-2xl border-2 border-amber-500 bg-amber-50/50 ring-2 ring-amber-400 transition shadow-sm hover:shadow-md relative group">
+            <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center font-black mb-2">
+              <i class="fa-solid fa-filter"></i>
+            </div>
+            <div class="text-xs text-amber-600 font-bold">第 3 - 6 週</div>
+            <h4 class="text-base font-bold text-slate-800">數字的密碼與質數牆</h4>
+            <p class="text-xs text-slate-500 mt-1">紅藍色片疊加找公倍數、百數表逆向篩選純白質數牆。</p>
+            <div class="select-indicator absolute top-3 right-3 text-amber-500 text-lg">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+          </div>
+
+          <!-- 卡牌 2: 共同密碼與公因數 -->
+          <div onclick="selectUnit(this, '密室逃脫與公因數', 'W7-8 鋪正方形金幣、密室逃脫最大公因數')" class="unit-card cursor-pointer bg-white p-4 rounded-2xl border-2 border-slate-200 hover:border-amber-500 transition shadow-sm hover:shadow-md relative group">
+            <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center font-black mb-2">
+              <i class="fa-solid fa-key"></i>
+            </div>
+            <div class="text-xs text-blue-600 font-bold">第 7 - 8 週</div>
+            <h4 class="text-base font-bold text-slate-800">密室逃脫與公因數</h4>
+            <p class="text-xs text-slate-500 mt-1">寶盒金幣平鋪零廢棄、密室三階段質因數矩陣解碼。</p>
+            <div class="select-indicator hidden absolute top-3 right-3 text-amber-500 text-lg">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+          </div>
+
+          <!-- 卡牌 3: 交通號誌與公倍數 -->
+          <div onclick="selectUnit(this, '十字路口交通號誌公倍數', 'W9-10 行人號誌與車行週期、避免事故之公倍數安全規劃')" class="unit-card cursor-pointer bg-white p-4 rounded-2xl border-2 border-slate-200 hover:border-amber-500 transition shadow-sm hover:shadow-md relative group">
+            <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center font-black mb-2">
+              <i class="fa-solid fa-traffic-light"></i>
+            </div>
+            <div class="text-xs text-emerald-600 font-bold">第 9 - 10 週</div>
+            <h4 class="text-base font-bold text-slate-800">十字路口交通號誌</h4>
+            <p class="text-xs text-slate-500 mt-1">行人25秒與車行40秒之最小公倍數200秒，消滅盲區。</p>
+            <div class="select-indicator hidden absolute top-3 right-3 text-amber-500 text-lg">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+          </div>
+
+          <!-- 卡牌 4: 規律視覺與線對稱 -->
+          <div onclick="selectUnit(this, '幾何對稱與視覺張力', 'W14-16 旗語整除餘數、伊斯蘭對稱紋樣、破壞對稱徽章')" class="unit-card cursor-pointer bg-white p-4 rounded-2xl border-2 border-slate-200 hover:border-amber-500 transition shadow-sm hover:shadow-md relative group">
+            <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center font-black mb-2">
+              <i class="fa-solid fa-shapes"></i>
+            </div>
+            <div class="text-xs text-purple-600 font-bold">第 14 - 16 週</div>
+            <h4 class="text-base font-bold text-slate-800">幾何對稱與視覺美感</h4>
+            <p class="text-xs text-slate-500 mt-1">線對稱對稱軸與對稱點、Canva數位徽章與刻意不對稱張力。</p>
+            <div class="select-indicator hidden absolute top-3 right-3 text-amber-500 text-lg">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+          </div>
+
+          <!-- 卡牌 5: 消失的領地面積 -->
+          <div onclick="selectUnit(this, '消失的領地面積分割', 'W17-18 平行四邊形沿高剪拼、鈍角三角形外部高除錯')" class="unit-card cursor-pointer bg-white p-4 rounded-2xl border-2 border-slate-200 hover:border-amber-500 transition shadow-sm hover:shadow-md relative group">
+            <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center font-black mb-2">
+              <i class="fa-solid fa-draw-polygon"></i>
+            </div>
+            <div class="text-xs text-rose-600 font-bold">第 17 - 18 週</div>
+            <h4 class="text-base font-bold text-slate-800">消失的領地與外部高</h4>
+            <p class="text-xs text-slate-500 mt-1">三角形與平行四邊形轉化、抓出逃稅者鈍角三角形外部高。</p>
+            <div class="select-indicator hidden absolute top-3 right-3 text-amber-500 text-lg">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+          </div>
+
+          <!-- 卡牌 6: Google Earth 怪盜追緝 -->
+          <div onclick="selectUnit(this, '怪盜經緯度與全球定位', 'W19 Google Earth 經緯度座標、高程落差與兩地直線距離')" class="unit-card cursor-pointer bg-white p-4 rounded-2xl border-2 border-slate-200 hover:border-amber-500 transition shadow-sm hover:shadow-md relative group">
+            <div class="w-10 h-10 rounded-xl bg-cyan-100 text-cyan-600 flex items-center justify-center font-black mb-2">
+              <i class="fa-solid fa-earth-americas"></i>
+            </div>
+            <div class="text-xs text-cyan-600 font-bold">第 19 週</div>
+            <h4 class="text-base font-bold text-slate-800">怪盜經緯度全球定位</h4>
+            <p class="text-xs text-slate-500 mt-1">東西經南北緯座標判別、海拔高度落差計算與街景特徵解密。</p>
+            <div class="select-indicator hidden absolute top-3 right-3 text-amber-500 text-lg">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+          </div>
+
+          <!-- 卡牌 7: 間隔植樹生態圈 -->
+          <div onclick="selectUnit(this, '間隔偵探與生態圈', 'W13 封閉環狀水池棵數等於間隔數、直線端點重合')" class="unit-card cursor-pointer bg-white p-4 rounded-2xl border-2 border-slate-200 hover:border-amber-500 transition shadow-sm hover:shadow-md relative group">
+            <div class="w-10 h-10 rounded-xl bg-teal-100 text-teal-600 flex items-center justify-center font-black mb-2">
+              <i class="fa-solid fa-tree"></i>
+            </div>
+            <div class="text-xs text-teal-600 font-bold">第 13 週</div>
+            <h4 class="text-base font-bold text-slate-800">間隔偵探與生態棲地</h4>
+            <p class="text-xs text-slate-500 mt-1">打破加一減一死背，用棉繩重合驗證環狀間隔等於樹木數。</p>
+            <div class="select-indicator hidden absolute top-3 right-3 text-amber-500 text-lg">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+          </div>
+
+          <!-- 卡牌 8: 表面積盛裝包裝 -->
+          <div onclick="selectUnit(this, '表面積盛裝與立體展開', '生活紙盒拆解、長寬高六面展開對稱、糊口與包裝')" class="unit-card cursor-pointer bg-white p-4 rounded-2xl border-2 border-slate-200 hover:border-amber-500 transition shadow-sm hover:shadow-md relative group">
+            <div class="w-10 h-10 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center font-black mb-2">
+              <i class="fa-solid fa-box-open"></i>
+            </div>
+            <div class="text-xs text-orange-600 font-bold">幾何延伸</div>
+            <h4 class="text-base font-bold text-slate-800">表面積盛裝與展開圖</h4>
+            <p class="text-xs text-slate-500 mt-1">拆解點心紙盒為2D平面，掌握三組相對相等面之表面積公式。</p>
+            <div class="select-indicator hidden absolute top-3 right-3 text-amber-500 text-lg">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 破案故事分享輸入表單 (活動一要求：簡述最有成就感任務與如何解決數學難題) -->
+      <div class="bg-white rounded-3xl p-5 sm:p-7 shadow-sm border border-slate-200 space-y-4">
+        <div class="flex items-center gap-2 text-slate-800 font-bold text-lg">
+          <i class="fa-solid fa-pen-nib text-amber-500"></i>
+          <span>破案檔案手記：分享你如何解決當時遇到的數學難題</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="space-y-2">
+            <label class="block text-sm font-bold text-slate-700">
+              1. 當時遇到的最大數學難題或迷思是什麼？
+            </label>
+            <textarea id="case-obstacle" rows="3" class="w-full bg-slate-50 border-2 border-slate-200 rounded-2xl p-3 text-sm sm:text-base focus:outline-none focus:border-amber-500 transition" placeholder="例如：尋找鈍角三角形的外部高時，一開始直覺都畫在圖形裡面，造成面積計算嚴重錯誤..."></textarea>
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-sm font-bold text-slate-700">
+              2. 你與團隊最後是運用何種「數感策略」成功破解的？
+            </label>
+            <textarea id="case-solution" rows="3" class="w-full bg-slate-50 border-2 border-slate-200 rounded-2xl p-3 text-sm sm:text-base focus:outline-none focus:border-amber-500 transition" placeholder="例如：我們利用三角板的直角邊，向外延伸底邊虛線，抓出垂直高，破解了視覺迷思！"></textarea>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+          <div class="text-xs text-slate-500 flex items-center gap-1.5">
+            <i class="fa-solid fa-lightbulb text-amber-500"></i>
+            <span>輸入內容將自動同步整合至「4F 成果展示反思」中。</span>
+          </div>
+          <button onclick="saveMissionStory()" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm sm:text-base shadow transition active:scale-95 flex items-center gap-2">
+            <i class="fa-solid fa-floppy-disk"></i>
+            <span>確認登記破案手記</span>
+          </button>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ==================== 分頁二：活動二 結業大挑戰與互評 ==================== -->
+    <section id="tab-challenge" class="tab-content hidden space-y-6">
+      
+      <!-- 10分鐘限時挑戰遊戲卡片 (10分鐘600秒、隨機抽取20題、每題5分滿分100分、50+題題庫防重複) -->
+      <div class="bg-slate-900 text-white rounded-3xl p-5 sm:p-7 shadow-xl border border-slate-800 space-y-5">
+        
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-4">
+          <div>
+            <span class="inline-flex items-center gap-1.5 bg-amber-500/20 text-amber-300 border border-amber-400/30 text-xs font-bold px-2.5 py-0.5 rounded-full mb-1">
+              <i class="fa-solid fa-fire"></i> 核心發展・總結考核
+            </span>
+            <h2 class="text-xl sm:text-2xl font-black">10分鐘終極數感解密挑戰賽</h2>
+            <p class="text-xs sm:text-sm text-slate-400">限時 10 分鐘，隨機抽選 20 題（每題 5 分，滿分 100 分）。題庫擴充至 54 道精選概念！</p>
+          </div>
+
+          <!-- 遊戲狀態看板 (計時器、進度、分數) -->
+          <div class="flex items-center gap-4 bg-slate-800/80 px-4 py-2.5 rounded-2xl border border-slate-700">
+            <!-- 倒數計時 (10:00) -->
+            <div class="text-center">
+              <div class="text-[10px] text-slate-400 font-bold uppercase">剩餘時間</div>
+              <div id="quiz-timer" class="text-2xl font-black text-amber-400 font-mono">10:00</div>
+            </div>
+            <div class="h-8 w-[1px] bg-slate-700"></div>
+            <!-- 考核進度 (0 / 20) -->
+            <div class="text-center">
+              <div class="text-[10px] text-slate-400 font-bold uppercase">考核進度</div>
+              <div id="quiz-progress-badge" class="text-lg font-black text-blue-400 font-mono">0 / 20</div>
+            </div>
+            <div class="h-8 w-[1px] bg-slate-700"></div>
+            <!-- 當前得分 (滿分100) -->
+            <div class="text-center">
+              <div class="text-[10px] text-slate-400 font-bold uppercase">考核得分</div>
+              <div id="quiz-score" class="text-2xl font-black text-emerald-400 font-mono">0<span class="text-xs text-slate-400 font-normal">/100</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 遊戲主體視窗 -->
+        <div id="quiz-screen-start" class="text-center py-10 space-y-4">
+          <div class="w-20 h-20 mx-auto rounded-3xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-4xl border border-amber-500/30">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <h3 class="text-xl sm:text-2xl font-bold">準備好接受終極特級偵探考核了嗎？</h3>
+          <p class="text-slate-300 text-sm sm:text-base max-w-lg mx-auto">
+            系統將從 54 道學期題庫中隨機抽出 20 題，限時 10 分鐘，每題 5 分（滿分 100 分）。測驗成果將直接套入 4F 反思與結業證書！
+          </p>
+          <button onclick="startQuiz()" class="px-8 py-4 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-lg sm:text-xl shadow-lg shadow-amber-500/30 transition active:scale-95">
+            <i class="fa-solid fa-play mr-2"></i> 開始 10 分鐘解密挑戰（20 題 / 滿分 100）
+          </button>
+        </div>
+
+        <!-- 作答區塊 (遊戲進行中) -->
+        <div id="quiz-screen-play" class="hidden space-y-4">
+          <div class="flex items-center justify-between text-xs text-slate-400 font-semibold">
+            <span id="quiz-progress-text">題號：1 / 20</span>
+            <span id="quiz-streak-text" class="text-amber-400 font-bold">連對：0 題</span>
+          </div>
+
+          <!-- 題目內容 -->
+          <div class="bg-slate-800 p-5 sm:p-6 rounded-2xl border border-slate-700 min-h-[110px] flex items-center">
+            <p id="quiz-question-text" class="text-base sm:text-xl font-bold text-white leading-relaxed">
+              題目載入中...
+            </p>
+          </div>
+
+          <!-- 四個超大觸控選項 (適合 iPad 點擊) -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="quiz-options-container">
+            <!-- 程式動態插入按鈕 -->
+          </div>
+
+          <!-- 即時解題回饋 -->
+          <div id="quiz-feedback" class="hidden p-3 rounded-xl text-center font-bold text-sm transition"></div>
+        </div>
+
+        <!-- 挑戰結果結算畫面 -->
+        <div id="quiz-screen-end" class="hidden text-center py-8 space-y-4">
+          <div class="inline-block p-4 rounded-full bg-emerald-500/20 text-emerald-400 text-5xl">
+            <i class="fa-solid fa-trophy"></i>
+          </div>
+          <h3 class="text-2xl sm:text-3xl font-black text-white" id="quiz-result-title">考核完成！</h3>
+          <p class="text-slate-300 text-sm sm:text-base max-w-md mx-auto" id="quiz-result-summary">
+            正在計算你的數感偵探積分...
+          </p>
+          <div class="flex flex-wrap items-center justify-center gap-3">
+            <button onclick="startQuiz()" class="px-6 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-sm sm:text-base border border-slate-700 transition">
+              <i class="fa-solid fa-rotate-right mr-1.5"></i> 再挑戰一次 (重新隨機出題)
+            </button>
+            <button onclick="switchTab('tab-reflection')" class="px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-sm sm:text-base shadow-lg transition">
+              <i class="fa-solid fa-arrow-right mr-1.5"></i> 前往 4F 成果與證書
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 活動二核心：小組組內互評、感謝夥伴與數位星級評分 -->
+      <div class="bg-white rounded-3xl p-5 sm:p-7 shadow-sm border border-slate-200 space-y-5">
+        <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold">
+              <i class="fa-solid fa-handshake-angle"></i>
+            </div>
+            <div>
+              <h3 class="text-lg sm:text-xl font-bold text-slate-800">小組互評與感謝夥伴卡片</h3>
+              <p class="text-xs text-slate-500">每人寫下一句給夥伴的感謝詞，並進行禮貌性的數位互評（融入【品E3】與【資E9】）</p>
+            </div>
+          </div>
+          <span class="bg-indigo-50 text-indigo-700 text-xs font-bold px-3 py-1 rounded-full border border-indigo-200">
+            團隊合作專區
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <!-- 左側：給隊友的感謝詞 -->
+          <div class="space-y-3 bg-slate-50 p-4 rounded-2xl border border-slate-200">
+            <label class="block text-sm font-bold text-slate-700 flex items-center gap-1.5">
+              <i class="fa-solid fa-heart text-rose-500"></i>
+              <span>寫一句給同組夥伴的真心感謝詞：</span>
+            </label>
+            <textarea id="peer-appreciation" rows="3" class="w-full bg-white border-2 border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:border-indigo-500 transition" placeholder="例如：感謝小隊長在我們卡在鈍角三角形外部高時，很有耐心地拿出三角板帶我們一起量..."></textarea>
+            
+            <!-- 快速常用溫馨引導詞標籤 -->
+            <div class="space-y-1">
+              <span class="text-xs font-semibold text-slate-500">點擊快速填入感謝詞句：</span>
+              <div class="flex flex-wrap gap-1.5">
+                <button type="button" onclick="insertPraise('謝謝你在我迷思卡關時，耐心帶著我一步步對齊三角板！')" class="text-xs bg-white hover:bg-indigo-50 border border-slate-200 text-slate-700 px-2 py-1 rounded-lg transition">🤝 感謝耐心指導</button>
+                <button type="button" onclick="insertPraise('你的數感心算速度超快，是我們組內的最強大腦！')" class="text-xs bg-white hover:bg-indigo-50 border border-slate-200 text-slate-700 px-2 py-1 rounded-lg transition">🧠 最強數感大腦</button>
+                <button type="button" onclick="insertPraise('遇到意見不同時，你能用心傾聽並找到最公平的折衷方案！')" class="text-xs bg-white hover:bg-indigo-50 border border-slate-200 text-slate-700 px-2 py-1 rounded-lg transition">👂 溫暖傾聽溝通</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 右側：數位互評星等量表 -->
+          <div class="space-y-3 bg-slate-50 p-4 rounded-2xl border border-slate-200">
+            <label class="block text-sm font-bold text-slate-700 flex items-center gap-1.5">
+              <i class="fa-solid fa-star text-amber-500"></i>
+              <span>數位互評星級評量（針對發表與解謎表現）：</span>
+            </label>
+
+            <!-- 評量指標 1 -->
+            <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-200">
+              <span class="text-xs sm:text-sm font-semibold text-slate-700">1. 數感邏輯清楚度</span>
+              <div class="flex items-center gap-1 text-amber-400 text-lg cursor-pointer" id="stars-logic">
+                <i class="fa-solid fa-star" onclick="setStars('logic', 1)"></i>
+                <i class="fa-solid fa-star" onclick="setStars('logic', 2)"></i>
+                <i class="fa-solid fa-star" onclick="setStars('logic', 3)"></i>
+              </div>
+            </div>
+
+            <!-- 評量指標 2 -->
+            <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-200">
+              <span class="text-xs sm:text-sm font-semibold text-slate-700">2. 團隊分工與互助態度</span>
+              <div class="flex items-center gap-1 text-amber-400 text-lg cursor-pointer" id="stars-team">
+                <i class="fa-solid fa-star" onclick="setStars('team', 1)"></i>
+                <i class="fa-solid fa-star" onclick="setStars('team', 2)"></i>
+                <i class="fa-solid fa-star" onclick="setStars('team', 3)"></i>
+              </div>
+            </div>
+
+            <!-- 評量指標 3 -->
+            <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-200">
+              <span class="text-xs sm:text-sm font-semibold text-slate-700">3. 問題解決與創新思維</span>
+              <div class="flex items-center gap-1 text-amber-400 text-lg cursor-pointer" id="stars-solve">
+                <i class="fa-solid fa-star" onclick="setStars('solve', 1)"></i>
+                <i class="fa-solid fa-star" onclick="setStars('solve', 2)"></i>
+                <i class="fa-solid fa-star" onclick="setStars('solve', 3)"></i>
+              </div>
+            </div>
+
+            <div class="text-right">
+              <button onclick="savePeerEvaluation()" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm shadow transition">
+                <i class="fa-solid fa-check mr-1"></i> 儲存互評與感謝
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ==================== 分頁三：活動三 4F思考成果與結業證書 ==================== -->
+    <section id="tab-reflection" class="tab-content hidden space-y-6">
+      
+      <!-- 頂部匯出與榮譽授勳抬頭 -->
+      <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-5 rounded-3xl border border-slate-200 shadow-sm">
+        <div>
+          <span class="bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full border border-amber-300">
+            <i class="fa-solid fa-award"></i> 綜合歸納・成果產出
+          </span>
+          <h2 class="text-2xl sm:text-3xl font-black text-slate-900 mt-1">4F 數感思考成果展</h2>
+          <p class="text-xs sm:text-sm text-slate-500">系統已自動為你將學習歷程套入 4F 模式，你可自由點選編輯，並一鍵匯出高畫質證書圖檔！</p>
+        </div>
+
+        <!-- 匯出成果為圖片按鈕 -->
+        <button onclick="exportResultImage()" class="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-sm sm:text-base shadow-lg shadow-emerald-600/20 transition active:scale-95 flex items-center gap-2">
+          <i class="fa-solid fa-file-image text-lg"></i>
+          <span>匯出結業成果圖片 (PNG)</span>
+        </button>
+      </div>
+
+      <!-- 4F 思考模式四大卡片 (Facts, Feelings, Findings, Future) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5" id="reflection-4f-cards">
+        
+        <!-- [Facts] 客觀事實 -->
+        <div class="bg-white rounded-3xl p-5 sm:p-6 border-2 border-blue-200 shadow-sm space-y-3 relative overflow-hidden">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-blue-100 text-blue-700 flex items-center justify-center font-black text-lg">
+              F1
+            </div>
+            <div>
+              <h3 class="text-lg font-black text-slate-800">[Facts] 事實回顧</h3>
+              <p class="text-xs text-slate-500">回顧這20週，你印象最深刻的一個「數感概念」是什麼？</p>
+            </div>
+          </div>
+          <textarea id="4f-facts" rows="4" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3.5 text-sm sm:text-base font-medium text-slate-700 focus:outline-none focus:border-blue-500 transition"></textarea>
+          <div class="text-[11px] text-blue-600 font-semibold flex items-center gap-1">
+            <i class="fa-solid fa-circle-info"></i> 已自動帶入你所選取的年度深刻單元與考核數據。
+          </div>
+        </div>
+
+        <!-- [Feelings] 感受反應 -->
+        <div class="bg-white rounded-3xl p-5 sm:p-6 border-2 border-amber-200 shadow-sm space-y-3 relative overflow-hidden">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center font-black text-lg">
+              F2
+            </div>
+            <div>
+              <h3 class="text-lg font-black text-slate-800">[Feelings] 感受反應</h3>
+              <p class="text-xs text-slate-500">在解決困難任務的過程中，你感到最挫折與最高興的時刻是什麼？</p>
+            </div>
+          </div>
+          <textarea id="4f-feelings" rows="4" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3.5 text-sm sm:text-base font-medium text-slate-700 focus:outline-none focus:border-amber-500 transition"></textarea>
+          <div class="text-[11px] text-amber-700 font-semibold flex items-center gap-1">
+            <i class="fa-solid fa-circle-info"></i> 包含卡關時的認知衝突，以及破解密碼時的成就喜悅。
+          </div>
+        </div>
+
+        <!-- [Findings] 發現意義 -->
+        <div class="bg-white rounded-3xl p-5 sm:p-6 border-2 border-emerald-200 shadow-sm space-y-3 relative overflow-hidden">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-black text-lg">
+              F3
+            </div>
+            <div>
+              <h3 class="text-lg font-black text-slate-800">[Findings] 發現意義</h3>
+              <p class="text-xs text-slate-500">你從「數感偵探」這個角色中，發現數學與日常生活有哪些驚人連結？</p>
+            </div>
+          </div>
+          <textarea id="4f-findings" rows="4" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3.5 text-sm sm:text-base font-medium text-slate-700 focus:outline-none focus:border-emerald-500 transition"></textarea>
+          <div class="text-[11px] text-emerald-700 font-semibold flex items-center gap-1">
+            <i class="fa-solid fa-circle-info"></i> 例如：紅綠燈週期計算避免車禍、磁磚不裁切達到零廢棄。
+          </div>
+        </div>
+
+        <!-- [Future] 未來展望 -->
+        <div class="bg-white rounded-3xl p-5 sm:p-6 border-2 border-purple-200 shadow-sm space-y-3 relative overflow-hidden">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-purple-100 text-purple-700 flex items-center justify-center font-black text-lg">
+              F4
+            </div>
+            <div>
+              <h3 class="text-lg font-black text-slate-800">[Future] 未來展望</h3>
+              <p class="text-xs text-slate-500">下個學期，你希望自己在哪種「偵探能力」上可以更進步？</p>
+            </div>
+          </div>
+          <textarea id="4f-future" rows="4" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3.5 text-sm sm:text-base font-medium text-slate-700 focus:outline-none focus:border-purple-500 transition"></textarea>
+          <div class="text-[11px] text-purple-700 font-semibold flex items-center gap-1">
+            <i class="fa-solid fa-circle-info"></i> 例如：更靈活的空間立體直覺、面對繁瑣數據時的耐心除錯。
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 結業證書預覽框 (預覽即將匯出為圖片的排版) -->
+      <div class="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-6 sm:p-8 text-white border-4 border-amber-500/40 shadow-2xl relative overflow-hidden">
+        <!-- 裝飾背景印章 -->
+        <div class="absolute -right-10 -bottom-10 w-64 h-64 border-8 border-amber-500/10 rounded-full flex items-center justify-center pointer-events-none">
+          <i class="fa-solid fa-certificate text-amber-500/10 text-9xl"></i>
+        </div>
+
+        <div class="relative z-10 space-y-5">
+          <div class="flex flex-wrap items-center justify-between border-b border-slate-700/80 pb-4 gap-2">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-2xl bg-amber-500 text-slate-950 flex items-center justify-center text-2xl font-black shadow-lg">
+                <i class="fa-solid fa-stamp"></i>
+              </div>
+              <div>
+                <div class="text-xs font-bold text-amber-400 tracking-widest uppercase">Official Certification</div>
+                <h3 class="text-xl sm:text-2xl font-black text-white">數感偵探結業榮譽證書</h3>
+              </div>
+            </div>
+            <div class="text-right">
+              <span id="cert-badge-level" class="inline-block bg-amber-500/20 text-amber-300 border border-amber-400/50 px-3 py-1 rounded-xl text-xs sm:text-sm font-bold">
+                特級數感偵探
+              </span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-800/60 p-4 rounded-2xl border border-slate-700 text-xs sm:text-sm">
+            <div>
+              <span class="text-slate-400 block text-[11px]">結業學員</span>
+              <span id="cert-student-info" class="font-bold text-white text-sm sm:text-base">五年一班 28號 野比大雄</span>
+            </div>
+            <div>
+              <span class="text-slate-400 block text-[11px]">考核積分</span>
+              <span id="cert-quiz-score" class="font-bold text-emerald-400 text-sm sm:text-base">0 分 / 100</span>
+            </div>
+            <div>
+              <span class="text-slate-400 block text-[11px]">專題單元</span>
+              <span id="cert-unit-name" class="font-bold text-amber-300 text-sm sm:text-base truncate block">數字的密碼與質數牆</span>
+            </div>
+            <div>
+              <span class="text-slate-400 block text-[11px]">認證期程</span>
+              <span class="font-bold text-slate-300 text-sm sm:text-base">全學期 20 週結業</span>
+            </div>
+          </div>
+
+          <div class="text-center pt-2">
+            <p class="text-xs text-slate-400 italic">「茲證明該員於本學期數感實驗室中，成功掌握生活規律、幾何面積與空間推理，展現卓越之問題解決力！」</p>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- 網頁最下方中央文字 (嚴格依要求呈現指定文字) -->
+  <footer class="mt-auto py-5 bg-white border-t border-slate-200 text-center">
+    <p class="text-xs sm:text-sm font-bold text-slate-600 tracking-wider">
+      數感實驗室&nbsp;&nbsp;|&nbsp;&nbsp;互動學習系統&nbsp;&nbsp;|&nbsp;&nbsp;Design：S.C. Kuo
+    </p>
+  </footer>
+
+  <!-- ==================== 彈窗 1：QR Code 掃碼連結 (iPad 相機直接掃描) ==================== -->
+  <div id="modal-qr" onclick="if(event.target === this) closeQrModal()" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-6 sm:p-7 max-w-sm w-full shadow-2xl text-center space-y-4 border border-slate-100">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+          <i class="fa-solid fa-qrcode text-amber-500"></i>
+          <span>iPad 掃碼直接開啟</span>
+        </h3>
+        <button onclick="closeQrModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- 動態 QR Code 容器 -->
+      <div class="bg-slate-50 p-4 rounded-2xl flex items-center justify-center min-h-[220px]">
+        <div id="qrcode-canvas" class="flex justify-center"></div>
+      </div>
+
+      <p class="text-xs text-slate-500">
+        使用 iPad 內建相機對準二維碼，即可立即同步載入本單元學習系統！
+      </p>
+
+      <!-- 一鍵複製網址備用功能 -->
+      <button onclick="copyCurrentUrl()" class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow transition active:scale-95 flex items-center justify-center gap-2">
+        <i class="fa-solid fa-copy"></i>
+        <span>一鍵複製目前網址</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ==================== 彈窗 2：課程設計說明 (課程指引功能) ==================== -->
+  <div id="modal-guide" onclick="if(event.target === this) closeGuideModal()" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-2xl w-full max-h-[85vh] overflow-y-auto shadow-2xl space-y-6 border border-slate-100 no-scrollbar">
+      
+      <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
+            <i class="fa-solid fa-book-open"></i>
+          </div>
+          <div>
+            <h3 class="text-xl font-black text-slate-800">課程設計說明</h3>
+            <span class="text-xs text-slate-400">國小五年級校定課程・數感實驗室【偵探結業式】</span>
+          </div>
+        </div>
+        <button onclick="closeGuideModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- 三大項內容：一、學習目標；二、網頁操作說明；三、課堂提問建議 -->
+      <div class="space-y-5 text-left text-sm text-slate-700 leading-relaxed">
+        
+        <!-- 一、學習目標 -->
+        <div class="space-y-2 bg-emerald-50/70 p-4 rounded-2xl border border-emerald-100">
+          <h4 class="font-black text-emerald-900 text-base flex items-center gap-2">
+            <i class="fa-solid fa-bullseye text-emerald-600"></i>
+            <span>一、學習目標</span>
+          </h4>
+          <ul class="list-disc list-inside space-y-1 text-xs sm:text-sm text-emerald-950 font-medium">
+            <li><strong>認知與數學能力</strong>：能綜調整學期所學之因數、倍數、質數、線對稱、幾何面積公式、經緯度座標與間隔週期規律，完成綜合解題。</li>
+            <li><strong>情意與人際溝通</strong>：欣賞並接納自己與他人的學習特質（綜合 1a-Ⅲ-1），進行正向同儕互評與真誠感謝（品德教育【品E3】）。</li>
+            <li><strong>後設認知與反思</strong>：運用 4F（Facts、Feelings、Findings、Future）焦點思考法進行學習遷移，覺察數學與日常生活之深刻連結。</li>
+          </ul>
+        </div>
+
+        <!-- 二、網頁操作說明 -->
+        <div class="space-y-2 bg-blue-50/70 p-4 rounded-2xl border border-blue-100">
+          <h4 class="font-black text-blue-900 text-base flex items-center gap-2">
+            <i class="fa-solid fa-tablet-screen-button text-blue-600"></i>
+            <span>二、網頁操作說明</span>
+          </h4>
+          <ol class="list-decimal list-inside space-y-1 text-xs sm:text-sm text-blue-950 font-medium">
+            <li><strong>身分設定</strong>：請於頂端選單選擇「班級」（預設五一到五十四班）與「座號」（1~28號），預設為五年一班28號野比大雄。</li>
+            <li><strong>探究回顧</strong>：點選八大單元卡牌之一，記錄當時卡關的難題與破案策略。</li>
+            <li><strong>10分鐘限時挑戰</strong>：系統從 54 道題庫隨機抽取 20 題進行數感速解，每題 5 分，滿分 100 分，成績將自動同步至結業證書與 4F 反思。</li>
+            <li><strong>互評與4F反思</strong>：給予夥伴一句真摯感謝詞並完成星級評價，最後一鍵匯出高畫質 PNG 學習成果圖檔。</li>
+          </ol>
+        </div>
+
+        <!-- 三、課堂提問建議 -->
+        <div class="space-y-2 bg-amber-50/70 p-4 rounded-2xl border border-amber-100">
+          <h4 class="font-black text-amber-900 text-base flex items-center gap-2">
+            <i class="fa-solid fa-comments text-amber-600"></i>
+            <span>三、課堂提問建議（4F 焦點討論引導）</span>
+          </h4>
+          <div class="space-y-1.5 text-xs sm:text-sm text-amber-950">
+            <p><strong>[Facts 客觀事實]</strong>：回顧這 20 週，哪一個數學概念曾經讓你直覺猜錯，後來才恍然大悟？</p>
+            <p><strong>[Feelings 感受反應]</strong>：當團隊卡在難題時，你的心情如何？最後解開時大家的第一個反應是什麼？</p>
+            <p><strong>[Findings 詮釋發現]</strong>：從「數感偵探」的角度來看，如果不學公倍數或座標，現代城市在交通或救援上會遇到什麼麻煩？</p>
+            <p><strong>[Future 做出決定]</strong>：升上六年級後，你希望將「數感眼光」用在生活的哪一個角落？</p>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="text-right">
+        <button onclick="closeGuideModal()" class="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm shadow">
+          關閉說明
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 自訂 Toast 訊息提示元件 (取代任何 alert) -->
+  <div id="toast" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-[100] bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-2 text-sm font-bold border border-slate-700 opacity-0 pointer-events-none transition-all duration-300">
+    <i class="fa-solid fa-circle-check text-emerald-400 text-lg" id="toast-icon"></i>
+    <span id="toast-message">操作成功</span>
+  </div>
+
+  <!-- 隱藏的 Canvas 渲染器 (用於高畫質輸出 PNG 圖檔) -->
+  <canvas id="export-canvas" width="1200" height="850" class="hidden"></canvas>
+
+  <script>
+    /* ==========================================================================
+       1. 全域變數、音效合成器與 Polyfill
+       ========================================================================== */
+    // Safari / iOS Canvas roundRect Polyfill 防呆
+    if (!CanvasRenderingContext2D.prototype.roundRect) {
+      CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+        if (typeof r === 'undefined') r = 0;
+        if (typeof r === 'number') r = { tl: r, tr: r, br: r, bl: r };
+        this.beginPath();
+        this.moveTo(x + r.tl, y);
+        this.lineTo(x + w - r.tr, y);
+        this.quadraticCurveTo(x + w, y, x + w, y + r.tr);
+        this.lineTo(x + w, y + h - r.br);
+        this.quadraticCurveTo(x + w, y + h, x + w - r.br, y + h);
+        this.lineTo(x + r.bl, y + h);
+        this.quadraticCurveTo(x, y + h, x, y + h - r.bl);
+        this.lineTo(x, y + r.tl);
+        this.quadraticCurveTo(x, y, x + r.tl, y);
+        this.closePath();
+        return this;
+      };
+    }
+
+    let studentProfile = {
+      className: "五年一班",
+      seatNumber: 28,
+      name: "野比大雄",
+      group: "第 1 隊",
+      selectedUnit: "數字的密碼與質數牆",
+      unitDesc: "W3-6 因倍數、公倍數混色、埃氏篩法質數牆",
+      quizScore: 0,
+      badgeTitle: "特級數感偵探"
+    };
+
+    // Web Audio API 合成音效 (無需外聯音檔，完美相容 iPad)
+    let audioCtx = null;
+    function getAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function playSound(type) {
+      try {
+        const ctx = getAudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        const now = ctx.currentTime;
+        if (type === 'correct') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(523.25, now);
+          osc.frequency.exponentialRampToValueAtTime(783.99, now + 0.15);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
+          osc.start(now);
+          osc.stop(now + 0.25);
+        } else if (type === 'wrong') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(220, now);
+          osc.frequency.linearRampToValueAtTime(146.83, now + 0.2);
+          gain.gain.setValueAtTime(0.25, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
+          osc.start(now);
+          osc.stop(now + 0.25);
+        } else if (type === 'celebrate') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(523.25, now);
+          osc.frequency.setValueAtTime(659.25, now + 0.1);
+          osc.frequency.setValueAtTime(783.99, now + 0.2);
+          osc.frequency.setValueAtTime(1046.50, now + 0.3);
+          gain.gain.setValueAtTime(0.25, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.5);
+          osc.start(now);
+          osc.stop(now + 0.5);
+        }
+      } catch (e) {
+        console.warn("音效播放限制:", e);
+      }
+    }
+
+    // 54 道隨機不重複五年級數感偵探題庫
+    const QUESTION_POOL = [
+      { q: "在「百數表」疊加實驗中，小組用紅片覆蓋 2 的倍數、藍片覆蓋 3 的倍數，第一個呈現「紫色」的數字是？", options: ["3", "5", "6", "9"], ans: 2, tip: "紅藍疊加即為 2 與 3 的公倍數，最小公倍數是 6。" },
+      { q: "關於質數的特質，下列何者正確？", options: ["所有奇數都是質數", "2 是唯一且最小的偶數質數", "1 是最小的質數", "質數一定有三個因數"], ans: 1, tip: "2 只有 1 和 2 兩個因數，是唯一的偶數質數！" },
+      { q: "委託人拿著 12cm 與 18cm 的藏寶盒，若要用同規格且最大的正方形金幣「完全填滿不裁剪」，金幣邊長應為多少？", options: ["3 公分", "4 公分", "6 公分", "12 公分"], ans: 2, tip: "12 與 18 的最大公因數為 6 公分。" },
+      { q: "在旗語規律「紅、白、藍、綠」四色循環中，第 100 面旗幟的顏色是什麼？（整除迷思）", options: ["紅色", "白色", "藍色", "綠色"], ans: 3, tip: "100 ÷ 4 = 25 餘 0，整除代表剛好是循環單元的最後一個「綠色」！" },
+      { q: "十字路口中，行人綠燈週期 25 秒，車行綠燈週期 40 秒，兩號誌下一次「同時啟動」最短需幾秒？", options: ["100 秒", "200 秒", "400 秒", "1000 秒"], ans: 1, tip: "25 與 40 的最小公倍數 [25, 40] = 200 秒。" },
+      { q: "在「消失的領地」中，逃稅者將鈍角三角形的高畫在圖形內部，正確的高應該怎麼找？", options: ["向外延伸底邊虛線量垂直高", "直接拿斜邊當作高", "不用找高直接底乘底", "把底邊長度除以 2"], ans: 0, tip: "鈍角三角形的外部高需向外延伸底邊做垂線！" },
+      { q: "平行四邊形的面積公式是「底 × 高」，它是透過將圖形沿著高剪開平移拼成哪種幾何形狀推導出來的？", options: ["圓形", "長方形", "梯形", "正五邊形"], ans: 1, tip: "沿高剪下直角三角形平移到另一側，剛好拼成長方形！" },
+      { q: "在生態廊道水池周圍進行植樹，水池是「首尾相接的封閉環狀」，若周長 40 公尺且每 5 公尺種一棵，共需種幾棵？", options: ["7 棵", "8 棵", "9 棵", "10 棵"], ans: 1, tip: "封閉環狀線路「棵數 ＝ 間隔數」，40 ÷ 5 = 8 棵。" },
+      { q: "在 Google Earth 坐標追緝中，坐標標示為 (25°N, 121°E)，其中「N」與「E」分別代表什麼？", options: ["北緯、東經", "南緯、西經", "北緯、西經", "南緯、東經"], ans: 0, tip: "N 代表 North (北緯)，E 代表 East (東經)。" },
+      { q: "一個長方體紙盒的長 5cm、寬 4cm、高 3cm，它的「表面積」是多少平方公分？", options: ["60 平方公分", "94 平方公分", "47 平方公分", "120 平方公分"], ans: 1, tip: "(5×4 + 4×3 + 3×5) × 2 = (20 + 12 + 15) × 2 = 94 平方公分。" },
+      { q: "下列哪一個數「不是」質數？", options: ["13", "19", "23", "27"], ans: 3, tip: "27 的因數有 1, 3, 9, 27，是合數！" },
+      { q: "正方形有幾條對稱軸？", options: ["1 條", "2 條", "4 條", "無數條"], ans: 2, tip: "正方形包含水平、垂直與兩條對角線，共 4 條對稱軸。" },
+      { q: "若兩數的最大公因數是 1，我們稱這兩個數的關係為？", options: ["倍數", "互質", "同質", "因數配對"], ans: 1, tip: "兩數公因數只有 1，數學上稱為「互質」。" },
+      { q: "梯形的面積公式為？", options: ["底 × 高", "(上底 + 下底) × 高 ÷ 2", "長 × 寬 × 高", "對角線相乘"], ans: 1, tip: "兩個全等梯形可以拼成平行四邊形，故需除以 2。" },
+      { q: "在直線路段「兩端都種樹」的情況下，全長 30 公尺，每 6 公尺種一棵，共有幾個「間隔」與幾「棵樹」？", options: ["5 個間隔，5 棵樹", "5 個間隔，6 棵樹", "6 個間隔，6 棵樹", "4 個間隔，5 棵樹"], ans: 1, tip: "間隔數 30 ÷ 6 = 5，兩端都種棵數為 間隔數 + 1 = 6 棵。" },
+      { q: "怪盜從海拔 1500 公尺的山頂逃到海拔 200 公尺的平原，兩人高度落差多少？", options: ["1700 公尺", "1300 公尺", "3000 公尺", "750 公尺"], ans: 1, tip: "1500 - 200 = 1300 公尺。" },
+      { q: "下列哪一個圖形「不是」線對稱圖形？", options: ["等腰三角形", "長方形", "平行四邊形", "圓形"], ans: 2, tip: "一般平行四邊形無對稱軸，無法對摺重合。" },
+      { q: "埃拉托斯特尼「篩法」篩選 1 到 100 的質數時，第一步是先把哪一個數字劃掉？", options: ["0", "1", "2", "3"], ans: 1, tip: "1 不是質數也不是合數，故第一步排除 1。" },
+      { q: "若 A 公車每 6 分鐘發一班，B 公車每 8 分鐘發一班，早上 8:00 同時發車，下一次同時發車是幾點幾分？", options: ["8:14", "8:24", "8:48", "9:00"], ans: 1, tip: "6 與 8 的最小公倍數是 24 分鐘，故為 8:24。" },
+      { q: "24 的所有因數共有幾個？", options: ["6 個", "8 個", "10 個", "4 個"], ans: 1, tip: "1, 2, 3, 4, 6, 8, 12, 24，共 8 個因數。" },
+      { q: "等邊三角形（正三角形）有幾條對稱軸？", options: ["1 條", "2 條", "3 條", "0 條"], ans: 2, tip: "正三角形有 3 條通過頂點與對邊中點的對稱軸。" },
+      { q: "在一個週長 100cm 的矩形中，長與寬相加是？", options: ["100cm", "50cm", "25cm", "200cm"], ans: 1, tip: "周長 = (長 + 寬) × 2，故長加寬為 50cm。" },
+      { q: "若三角形的底變成原來的 2 倍，高不變，面積會變成原來的幾倍？", options: ["不變", "2 倍", "4 倍", "一半"], ans: 1, tip: "面積 = 底 × 高 ÷ 2，底變 2 倍，面積隨之變 2 倍。" },
+      { q: "下列各數中，哪一個數同時是 2、3、5 的公倍數？", options: ["25", "30", "45", "50"], ans: 1, tip: "2×3×5 = 30，30 是三者的最小公倍數。" },
+      { q: "「零廢棄磁磚拼貼」中，長 24、寬 36 的牆壁，用最大正方形地磚鋪設需幾塊？", options: ["6 塊", "12 塊", "8 塊", "24 塊"], ans: 0, tip: "最大公因數是 12，長排 2 塊，寬排 3 塊，2 × 3 = 6 塊。" },
+      { q: "在線對稱圖形中，對稱軸與對稱點相連線段的關係為何？", options: ["互相平行", "垂直平分", "任意相交", "長度不相等"], ans: 1, tip: "對稱軸會垂直平分連接兩對稱點的線段！" },
+      { q: "在五稜柱中，側面展開圖是由幾個長方形組成的？", options: ["3 個", "4 個", "5 個", "7 個"], ans: 2, tip: "五稜柱有 5 個側面，因此展開有 5 個長方形。" },
+      { q: "甲每 3 天去圖書館，乙每 5 天去圖書館，今天兩人在圖書館相遇，最少幾天後會再次相遇？", options: ["8 天", "10 天", "15 天", "30 天"], ans: 2, tip: "3 與 5 互質，最小公倍數為 3 × 5 = 15 天。" },
+      { q: "一個三角形的底是 10cm，高是 6cm，其面積為？", options: ["60 cm²", "30 cm²", "16 cm²", "15 cm²"], ans: 1, tip: "10 × 6 ÷ 2 = 30 平方公分。" },
+      { q: "一組循環圖案「⭐🔷🔺」，第 47 個圖案是什麼？", options: ["⭐", "🔷", "🔺", "無法判斷"], ans: 1, tip: "47 ÷ 3 = 15 餘 2，第 2 個是 🔷。" },
+      { q: "在直角三角形中，兩條直角邊長為 6cm 與 8cm，其面積是？", options: ["48 cm²", "24 cm²", "14 cm²", "28 cm²"], ans: 1, tip: "直角邊互為底和高：6 × 8 ÷ 2 = 24 平方公分。" },
+      { q: "求 18 與 24 的最小公倍數是多少？", options: ["48", "72", "144", "6"], ans: 1, tip: "[18, 24] = 72。" },
+      { q: "正方體有幾個頂點？幾條邊？幾個面？", options: ["8個頂點，12條邊，6個面", "6個頂點，8條邊，12個面", "8個頂點，6條邊，12個面", "12個頂點，8條邊，6個面"], ans: 0, tip: "正方體為 8 頂點、12 稜邊、6 面。" },
+      { q: "在兩端「都不種樹」的道路上，間隔數與樹木數的關係為何？", options: ["樹木數 = 間隔數", "樹木數 = 間隔數 + 1", "樹木數 = 間隔數 - 1", "樹木數 = 間隔數 × 2"], ans: 2, tip: "兩端都不種，樹木數量比間隔數少 1。" },
+      { q: "地球儀上橫向的線被稱為？", options: ["經線", "緯線", "子午線", "赤道面"], ans: 1, tip: "橫緯豎經，橫向為緯線，垂直為經線。" },
+      { q: "數感偵探結業時最重要的精神是？", options: ["死記公式", "在日常生活中發現規律並與同儕合作解決問題", "比別人算得快就好", "遇到難題直接放棄"], ans: 1, tip: "數感偵探的核心是發現真實生活中的數學，並用邏輯協作破案！" },
+      { q: "A 線公車每 10 分鐘一班，B 線每 15 分鐘一班，兩車在上午 7:00 同時發車，下一次同時發車是幾點？", options: ["7:30", "7:25", "7:45", "8:00"], ans: 0, tip: "10 與 15 的最小公倍數是 30 分鐘，7:00 + 30分 = 7:30。" },
+      { q: "長方形長 12 公分、寬 8 公分，若要剪成大小相同且邊長為整數的最大正方形，每個正方形邊長多少？", options: ["2 公分", "4 公分", "6 公分", "8 公分"], ans: 1, tip: "12 與 8 的最大公因數為 4 公分。" },
+      { q: "一條直線步道全長 60 公尺，「只在一端種樹（另一端不種）」，每隔 10 公尺種一棵，共需種幾棵？", options: ["5 棵", "7 棵", "6 棵", "8 棵"], ans: 2, tip: "一端種一端不種：棵數 ＝ 間隔數 ＝ 60 ÷ 10 ＝ 6 棵。" },
+      { q: "將兩個完全一模一樣（全等）的梯形倒過來拼接，一定可以拼成下列哪種圖形？", options: ["正方形", "平行四邊形", "梯形", "圓形"], ans: 1, tip: "兩個全等梯形倒置旋轉拼接，上底與下底對齊，必可拼成平行四邊形！" },
+      { q: "一個「等腰三角形（但不是正三角形）」有幾條對稱軸？", options: ["1 條", "2 條", "3 條", "0 條"], ans: 0, tip: "等腰三角形只有 1 條從頂角平分線到底邊中點的對稱軸。" },
+      { q: "圓形總共有幾條對稱軸？", options: ["1 條", "4 條", "100 條", "無限多條（無數條）"], ans: 3, tip: "通過圓心的任一直徑都是圓的對稱軸，因此有無限多條！" },
+      { q: "關於質數與合數的敘述，下列何者「錯誤」？", options: ["1 是最小的質數", "2 是最小的質數", "所有的合數至少有 3 個因數", "9 是奇數但它是合數"], ans: 0, tip: "1 只有 1 個因數，所以 1「既不是質數也不是合數」！" },
+      { q: "一個長方體的長、寬、高分別為 2cm、3cm、4cm，它的「體積」是多少立方公分？", options: ["18 立方公分", "24 立方公分", "52 立方公分", "9 立方公分"], ans: 1, tip: "長方體體積 ＝ 長 × 寬 × 高 ＝ 2 × 3 × 4 ＝ 24 立方公分。" },
+      { q: "某交通號誌燈以「紅燈45秒、綠燈35秒、黃燈5秒」規律循環，一個完整週期總共是幾秒？", options: ["80 秒", "90 秒", "85 秒", "75 秒"], ans: 2, tip: "45 + 35 + 5 ＝ 85 秒。" },
+      { q: "數字 36 的所有因數中，最大的「質因數」是誰？", options: ["2", "3", "9", "18"], ans: 1, tip: "36 的質因數分解為 2² × 3²，質因數只有 2 和 3，最大的是 3。" },
+      { q: "小明用 1 立方公分的正方體積木堆出一個邊長 3 公分的正方體，總共需要幾個小積木？", options: ["9 個", "18 個", "27 個", "36 個"], ans: 2, tip: "3 × 3 × 3 ＝ 27 個積木。" },
+      { q: "兩條平行線之間的距離處處相等，若在兩平行線間畫三個「同底」且「頂點在另一平行線上」的三角形，它們的面積關係為何？", options: ["面積完全相等", "形狀尖的面積比較大", "無法比較", "底邊越長的三角形面積越小"], ans: 0, tip: "因為同底且兩平行線間的高處處相等，所以面積（底×高÷2）完全相同！" },
+      { q: "經緯度坐標 (0°, 0°) 是位於地球上的哪裡？", options: ["北極點", "南極點", "本初子午線與赤道交會處", "國際換日線與北極圈交會處"], ans: 2, tip: "0° 緯度為赤道，0° 經度為本初子午線，其交會點位於幾內亞灣海上。" },
+      { q: "將一張正方形色紙對摺兩次（十字對摺）後剪掉一個角，完全展開後會形成什麼特徵的圖形？", options: ["不對稱圖形", "具有 2 條相互垂直對稱軸的線對稱圖形", "三角形", "無法判斷"], ans: 1, tip: "十字對摺兩次展開後，會具有水平與垂直 2 條互相垂直的對稱軸！" },
+      { q: "100 以內最大的質數是多少？", options: ["91", "93", "99", "97"], ans: 3, tip: "91=7×13、93=3×31，100 以內最大的質數是 97。" },
+      { q: "平面上任意一個三角形的三個內角和是多少度？", options: ["90 度", "180 度", "360 度", "270 度"], ans: 1, tip: "三角形內角和必為 180 度。" },
+      { q: "景觀步道長 100 公尺，兩端都設有路燈，每 20 公尺設一盞，共有幾盞路燈？", options: ["5 盞", "6 盞", "4 盞", "7 盞"], ans: 1, tip: "間隔數 100 ÷ 20 = 5，兩端都設盞數為 5 + 1 = 6 盞。" },
+      { q: "平行四邊形若底邊長度變為原本的 3 倍，高保持不變，其面積會？", options: ["變為原本的 3 倍", "變為原本的 9 倍", "不變", "變為原本的 6 倍"], ans: 0, tip: "平行四邊形面積 ＝ 底 × 高，高不變時，面積與底成正比，故為 3 倍。" }
+    ];
+
+    /* ==========================================================================
+       2. 分頁切換、選單初始化與資料同步 (全面偵錯修復)
+       ========================================================================== */
+    function switchTab(tabId) {
+      // 隱藏所有分頁
+      document.querySelectorAll('.tab-content').forEach(section => {
+        section.classList.add('hidden');
+      });
+
+      // 顯示目標分頁
+      const targetSection = document.getElementById(tabId);
+      if (targetSection) {
+        targetSection.classList.remove('hidden');
+      }
+
+      // 更新按鈕樣式
+      const tabConfigs = [
+        { id: 'btn-tab-review', target: 'tab-review' },
+        { id: 'btn-tab-challenge', target: 'tab-challenge' },
+        { id: 'btn-tab-reflection', target: 'tab-reflection' }
+      ];
+
+      tabConfigs.forEach(item => {
+        const btn = document.getElementById(item.id);
+        if (!btn) return;
+        if (item.target === tabId) {
+          btn.className = "tab-btn active px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-base font-bold transition-all flex items-center gap-1.5 bg-amber-500 text-slate-950 shadow-md";
+        } else {
+          btn.className = "tab-btn px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-base font-bold transition-all flex items-center gap-1.5 text-slate-300 hover:text-white hover:bg-slate-700/60";
+        }
+      });
+
+      if (tabId === 'tab-reflection') {
+        generateDefault4FContent();
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function initClassAndSeatOptions() {
+      const classSelect = document.getElementById('select-class');
+      const seatSelect = document.getElementById('select-seat');
+
+      // 班級：五年一班 ~ 五年十四班
+      const chineseNums = ["一", "二", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二", "十三", "十四"];
+      classSelect.innerHTML = '';
+      chineseNums.forEach((cName, idx) => {
+        const opt = document.createElement('option');
+        opt.value = `五年${cName}班`;
+        opt.textContent = `五年${cName}班`;
+        if (idx === 0) opt.selected = true; // 預設五年一班
+        classSelect.appendChild(opt);
+      });
+
+      // 座號：1 號 ~ 28 號
+      seatSelect.innerHTML = '';
+      for (let i = 1; i <= 28; i++) {
+        const opt = document.createElement('option');
+        opt.value = i;
+        opt.textContent = `${i} 號`;
+        if (i === 28) opt.selected = true; // 預設 28 號
+        seatSelect.appendChild(opt);
+      }
+
+      updateProfile();
+    }
+
+    function updateProfile() {
+      studentProfile.className = document.getElementById('select-class')?.value || "五年一班";
+      studentProfile.seatNumber = document.getElementById('select-seat')?.value || 28;
+      studentProfile.name = document.getElementById('input-name')?.value.trim() || "野比大雄";
+      studentProfile.group = document.getElementById('select-group')?.value || "第 1 隊";
+
+      const certInfo = document.getElementById('cert-student-info');
+      if (certInfo) {
+        certInfo.textContent = `${studentProfile.className} ${studentProfile.seatNumber}號 ${studentProfile.name}`;
+      }
+      generateDefault4FContent();
+    }
+
+    function selectUnit(cardEl, unitName, unitDesc) {
+      studentProfile.selectedUnit = unitName;
+      studentProfile.unitDesc = unitDesc;
+
+      document.querySelectorAll('.unit-card').forEach(card => {
+        card.classList.remove('border-amber-500', 'bg-amber-50/50', 'ring-2', 'ring-amber-400');
+        card.classList.add('border-slate-200');
+        const indicator = card.querySelector('.select-indicator');
+        if (indicator) indicator.classList.add('hidden');
+      });
+
+      if (cardEl) {
+        cardEl.classList.remove('border-slate-200');
+        cardEl.classList.add('border-amber-500', 'bg-amber-50/50', 'ring-2', 'ring-amber-400');
+        const indicator = cardEl.querySelector('.select-indicator');
+        if (indicator) indicator.classList.remove('hidden');
+      }
+
+      const certUnit = document.getElementById('cert-unit-name');
+      if (certUnit) certUnit.textContent = unitName;
+
+      showToast(`已選取最深刻任務：「${unitName}」`, "info");
+      generateDefault4FContent();
+    }
+
+    function saveMissionStory() {
+      const obstacle = document.getElementById('case-obstacle')?.value.trim();
+      const solution = document.getElementById('case-solution')?.value.trim();
+
+      if (!obstacle && !solution) {
+        showToast("請填寫遇到的難題或數感解題策略喔！", "warning");
+        return;
+      }
+
+      generateDefault4FContent();
+      showToast("破案手記已成功登錄並同步至 4F 成果！", "success");
+      playSound('correct');
+    }
+
+    /* ==========================================================================
+       3. 10分鐘結業大挑戰核心引擎 (防連擊鎖定、隨機20題、每題5分)
+       ========================================================================== */
+    let quizQuestions = [];
+    let currentQIdx = 0;
+    let quizScore = 0;
+    let correctCount = 0;
+    let quizTimer = 600; // 10 分鐘 = 600 秒
+    let timerInterval = null;
+    let quizStreak = 0;
+    let isAnswering = false; // 防連擊 Debounce 狀態鎖
+
+    function formatTime(seconds) {
+      const m = Math.floor(seconds / 60);
+      const s = seconds % 60;
+      return `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+
+    function startQuiz() {
+      quizScore = 0;
+      correctCount = 0;
+      quizTimer = 600;
+      quizStreak = 0;
+      currentQIdx = 0;
+      isAnswering = false;
+
+      // Fisher-Yates 隨機洗牌，抽取前 20 題
+      quizQuestions = [...QUESTION_POOL].sort(() => Math.random() - 0.5).slice(0, 20);
+
+      document.getElementById('quiz-screen-start').classList.add('hidden');
+      document.getElementById('quiz-screen-end').classList.add('hidden');
+      document.getElementById('quiz-screen-play').classList.remove('hidden');
+
+      updateQuizHUD();
+
+      if (timerInterval) clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        quizTimer--;
+        updateQuizHUD();
+
+        if (quizTimer <= 60) {
+          document.getElementById('quiz-timer').classList.add('text-rose-500', 'pulse-urgent');
+        } else {
+          document.getElementById('quiz-timer').classList.remove('text-rose-500', 'pulse-urgent');
+        }
+
+        if (quizTimer <= 0) {
+          endQuiz("時間到！10分鐘挑戰結束！");
+        }
+      }, 1000);
+
+      renderCurrentQuestion();
+      showToast("10分鐘解密大挑戰開始！共 20 題，滿分 100 分！", "info");
+    }
+
+    function updateQuizHUD() {
+      document.getElementById('quiz-timer').textContent = formatTime(quizTimer);
+      document.getElementById('quiz-score').innerHTML = `${quizScore}<span class="text-xs text-slate-400 font-normal">/100</span>`;
+      document.getElementById('quiz-progress-badge').textContent = `${Math.min(currentQIdx + 1, 20)} / 20`;
+      document.getElementById('quiz-streak-text').textContent = `連對：${quizStreak} 題 (已答對 ${correctCount} 題)`;
+    }
+
+    function renderCurrentQuestion() {
+      isAnswering = false;
+      if (currentQIdx >= quizQuestions.length) {
+        endQuiz("太卓越了！你順利完成了全部 20 道解密任務！");
+        return;
+      }
+
+      const qData = quizQuestions[currentQIdx];
+      document.getElementById('quiz-progress-text').textContent = `題號：${currentQIdx + 1} / 20 題 (每題 5 分)`;
+      document.getElementById('quiz-question-text').textContent = qData.q;
+      updateQuizHUD();
+
+      const optsContainer = document.getElementById('quiz-options-container');
+      optsContainer.innerHTML = '';
+
+      qData.options.forEach((optText, idx) => {
+        const btn = document.createElement('button');
+        btn.className = "quiz-opt-btn w-full min-h-[56px] text-left p-4 rounded-2xl bg-slate-700/80 hover:bg-slate-600 border border-slate-600 text-white font-bold text-sm sm:text-base transition active:scale-98 flex items-center gap-3";
+        btn.innerHTML = `
+          <span class="w-8 h-8 rounded-xl bg-slate-800 text-amber-400 flex items-center justify-center font-black text-sm border border-slate-700">
+            ${['A', 'B', 'C', 'D'][idx]}
+          </span>
+          <span class="flex-1">${optText}</span>
+        `;
+        btn.onclick = () => handleAnswer(idx);
+        optsContainer.appendChild(btn);
+      });
+
+      document.getElementById('quiz-feedback').classList.add('hidden');
+    }
+
+    function handleAnswer(selectedIdx) {
+      if (isAnswering) return; // 防 iPad 連按防抖鎖定
+      isAnswering = true;
+
+      const qData = quizQuestions[currentQIdx];
+      const feedbackEl = document.getElementById('quiz-feedback');
+      const optBtns = document.querySelectorAll('.quiz-opt-btn');
+
+      optBtns.forEach(btn => btn.disabled = true);
+
+      if (selectedIdx === qData.ans) {
+        playSound('correct');
+        correctCount++;
+        quizScore = correctCount * 5; // 每題 5 分，滿分 100 分
+        quizStreak++;
+        optBtns[selectedIdx].classList.add('bg-emerald-600', 'border-emerald-400');
+
+        feedbackEl.className = "p-3 rounded-xl text-center font-bold text-sm bg-emerald-900/60 text-emerald-300 border border-emerald-500/40";
+        feedbackEl.innerHTML = `<i class="fa-solid fa-circle-check mr-1.5"></i> 正確 (+5分)！${qData.tip}`;
+        feedbackEl.classList.remove('hidden');
+
+        setTimeout(() => {
+          currentQIdx++;
+          renderCurrentQuestion();
+        }, 850);
+
+      } else {
+        playSound('wrong');
+        quizStreak = 0;
+        optBtns[selectedIdx].classList.add('bg-rose-700', 'border-rose-400');
+        optBtns[qData.ans].classList.add('bg-emerald-700', 'border-emerald-400');
+
+        feedbackEl.className = "p-3 rounded-xl text-center font-bold text-sm bg-rose-900/60 text-rose-300 border border-rose-500/40";
+        feedbackEl.innerHTML = `<i class="fa-solid fa-circle-xmark mr-1.5"></i> 迷思提示：${qData.tip}`;
+        feedbackEl.classList.remove('hidden');
+
+        setTimeout(() => {
+          currentQIdx++;
+          renderCurrentQuestion();
+        }, 1250);
+      }
+
+      updateQuizHUD();
+    }
+
+    function endQuiz(reason) {
+      if (timerInterval) clearInterval(timerInterval);
+      playSound('celebrate');
+
+      document.getElementById('quiz-screen-play').classList.add('hidden');
+      document.getElementById('quiz-screen-end').classList.remove('hidden');
+
+      let badge = "特級數感偵探";
+      if (quizScore === 100) {
+        badge = "首席特級數感偵探";
+      } else if (quizScore >= 85) {
+        badge = "金牌資深解密偵探";
+      } else if (quizScore >= 70) {
+        badge = "銀牌新星數感偵探";
+      } else if (quizScore >= 60) {
+        badge = "銅牌正式數感偵探";
+      } else {
+        badge = "潛力實習偵探";
+      }
+
+      studentProfile.quizScore = quizScore;
+      studentProfile.badgeTitle = badge;
+
+      document.getElementById('quiz-result-title').textContent = reason;
+      document.getElementById('quiz-result-summary').innerHTML = `
+        學員 <strong>${studentProfile.name}</strong> 於 20 題中答對 <strong>${correctCount}</strong> 題！<br>
+        最終得分：<span class="text-emerald-400 font-mono font-black text-2xl">${quizScore}</span> / 100 分<br>
+        榮獲授勳評級：<span class="text-amber-400 font-black text-lg underline">${badge}</span>！
+      `;
+
+      document.getElementById('cert-quiz-score').textContent = `${quizScore} 分 / 100`;
+      document.getElementById('cert-badge-level').textContent = badge;
+      document.getElementById('badge-title-header').textContent = badge;
+
+      generateDefault4FContent();
+    }
+
+    /* ==========================================================================
+       4. 同儕互評與 4F 反思內容動態合成
+       ========================================================================== */
+    let peerRating = { logic: 3, team: 3, solve: 3 };
+
+    function setStars(category, count) {
+      peerRating[category] = count;
+      const container = document.getElementById(`stars-${category}`);
+      if (!container) return;
+      const stars = container.querySelectorAll('i');
+      stars.forEach((s, idx) => {
+        if (idx < count) {
+          s.className = "fa-solid fa-star text-amber-400";
+        } else {
+          s.className = "fa-regular fa-star text-slate-300";
+        }
+      });
+      showToast(`已評定星等：${count} 顆星`, "info");
+    }
+
+    function insertPraise(text) {
+      const txtArea = document.getElementById('peer-appreciation');
+      if (txtArea) {
+        txtArea.value = text;
+        showToast("已帶入感謝詞！", "info");
+      }
+    }
+
+    function savePeerEvaluation() {
+      const text = document.getElementById('peer-appreciation')?.value.trim();
+      if (!text) {
+        showToast("請填寫一句感謝夥伴的話喔！", "warning");
+        return;
+      }
+      showToast("小組互評與感謝卡已送出！團隊默契 +100！", "success");
+      playSound('correct');
+      generateDefault4FContent();
+    }
+
+    function generateDefault4FContent() {
+      const obstacle = document.getElementById('case-obstacle')?.value.trim() || "一開始面對繁複的圖形或未知的坐標時，容易陷入直覺猜測的盲區。";
+      const solution = document.getElementById('case-solution')?.value.trim() || "小組運用三角板量測延伸垂直高、或是拆解因倍數規律，找到精確答案。";
+      const appreciation = document.getElementById('peer-appreciation')?.value.trim() || "謝謝隊友在解密卡關時不放棄，互相提醒與計算！";
+
+      // [Facts] 事實回顧
+      const factsEl = document.getElementById('4f-facts');
+      if (factsEl) {
+        factsEl.value = `回顧全學期20週的探究，我印象最深刻的單元是「${studentProfile.selectedUnit}」。在今日的10分鐘結業大挑戰（共20題）中，我獲得了 ${studentProfile.quizScore} 分（滿分100分）。在真實任務中，我們學會了如何從文本提取限制條件、用百數表篩選質數，以及用經緯度與比例尺在地圖上進行精準定位。`;
+      }
+
+      // [Feelings] 感受反應
+      const feelingsEl = document.getElementById('4f-feelings');
+      if (feelingsEl) {
+        feelingsEl.value = `在遭遇困難時（${obstacle}），我和組員曾感到有些挫折；但當我們運用策略（${solution}）順利破解暗號時，那種豁然開朗的成就感非常強烈！另外，我也很感謝夥伴：${appreciation}`;
+      }
+
+      // [Findings] 發現意義
+      const findingsEl = document.getElementById('4f-findings');
+      if (findingsEl) {
+        findingsEl.value = `身為「數感偵探」，我深刻發現數學不只是課本上的算式，而是守護日常秩序的工具！例如：紅綠燈最小公倍數能消滅十字路口的碰撞危機、最大公因數能在裝修地磚時做到零廢棄、而經緯度坐標更是全球導航與緊急救援不可或缺的精密語言。`;
+      }
+
+      // [Future] 未來展望
+      const futureEl = document.getElementById('4f-future');
+      if (futureEl) {
+        futureEl.value = `進入下個學期，我希望自己在「立體幾何空間想像」以及「大數據心算與驗算」上能更進一步。遇到未知的難題時，我會主動運用「畫圖轉化」與「窮舉檢驗」策略，並在團隊合作中扮演更具耐心與包容力的首席解密手！`;
+      }
+    }
+
+    /* ==========================================================================
+       5. 高畫質 HTML5 Canvas PNG 圖片匯出引擎
+       ========================================================================== */
+    function exportResultImage() {
+      showToast("正在生成高解析度 PNG 證書圖檔，請稍候...", "info");
+
+      const canvas = document.getElementById('export-canvas');
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width;
+      const h = canvas.height;
+
+      // 1. 背景漸層 (午夜藍科技風格)
+      const grad = ctx.createLinearGradient(0, 0, w, h);
+      grad.addColorStop(0, '#0F172A');
+      grad.addColorStop(0.5, '#1E293B');
+      grad.addColorStop(1, '#090D16');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, w, h);
+
+      // 2. 邊框與裝飾金線
+      ctx.strokeStyle = '#F59E0B';
+      ctx.lineWidth = 8;
+      ctx.strokeRect(30, 30, w - 60, h - 60);
+
+      ctx.strokeStyle = '#FCD34D';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(42, 42, w - 84, h - 84);
+
+      // 3. 頂部標題與徽章
+      ctx.fillStyle = '#F59E0B';
+      ctx.font = 'bold 20px "Noto Sans TC", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('MATH SENSE DETECTIVE ACADEMY', w / 2, 85);
+
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = '900 40px "Noto Sans TC", sans-serif';
+      ctx.fillText('數感偵探結業榮譽證書', w / 2, 135);
+
+      ctx.fillStyle = '#94A3B8';
+      ctx.font = '16px "Noto Sans TC", sans-serif';
+      ctx.fillText('校定課程・五年級學期成果與 4F 思考檔案', w / 2, 165);
+
+      // 4. 學員資料橫幅卡片
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
+      ctx.fillRect(70, 190, w - 140, 75);
+      ctx.strokeStyle = 'rgba(245, 158, 11, 0.4)';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(70, 190, w - 140, 75);
+
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#CBD5E1';
+      ctx.font = 'bold 16px "Noto Sans TC", sans-serif';
+      ctx.fillText(`學員姓名：${studentProfile.className} ${studentProfile.seatNumber}號  ${studentProfile.name}`, 95, 235);
+      ctx.fillText(`所屬小隊：${studentProfile.group}`, 480, 235);
+      ctx.fillText(`考核積分：${studentProfile.quizScore} 分 (滿分 100)`, 710, 235);
+
+      ctx.fillStyle = '#FBBF24';
+      ctx.fillText(`榮譽授勳：${studentProfile.badgeTitle}`, 945, 235);
+
+      // 5. 繪製 4F 反思內容
+      const facts = document.getElementById('4f-facts')?.value || "";
+      const feelings = document.getElementById('4f-feelings')?.value || "";
+      const findings = document.getElementById('4f-findings')?.value || "";
+      const future = document.getElementById('4f-future')?.value || "";
+
+      function render4FBlock(title, color, text, x, y, width, height) {
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.7)';
+        ctx.fillRect(x, y, width, height);
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(x, y, width, height);
+
+        ctx.fillStyle = color;
+        ctx.font = 'bold 18px "Noto Sans TC", sans-serif';
+        ctx.fillText(title, x + 16, y + 32);
+
+        ctx.fillStyle = '#E2E8F0';
+        ctx.font = '14px "Noto Sans TC", sans-serif';
+        wrapText(ctx, text, x + 16, y + 60, width - 32, 22, 5);
+      }
+
+      function wrapText(context, text, x, y, maxWidth, lineHeight, maxLines) {
+        const words = text.split('');
+        let line = '';
+        let linesCount = 0;
+        for (let n = 0; n < words.length; n++) {
+          const testLine = line + words[n];
+          const metrics = context.measureText(testLine);
+          if (metrics.width > maxWidth && n > 0) {
+            context.fillText(line, x, y);
+            line = words[n];
+            y += lineHeight;
+            linesCount++;
+            if (linesCount >= maxLines - 1) {
+              context.fillText(line + '...', x, y);
+              return;
+            }
+          } else {
+            line = testLine;
+          }
+        }
+        context.fillText(line, x, y);
+      }
+
+      const cardW = (w - 140 - 24) / 2;
+      const cardH = 210;
+      render4FBlock('[Facts] 事實回顧', '#60A5FA', facts, 70, 285, cardW, cardH);
+      render4FBlock('[Feelings] 感受反應', '#FBBF24', feelings, 70 + cardW + 24, 285, cardW, cardH);
+      render4FBlock('[Findings] 發現意義', '#34D399', findings, 70, 515, cardW, cardH);
+      render4FBlock('[Future] 未來展望', '#C084FC', future, 70 + cardW + 24, 515, cardW, cardH);
+
+      // 6. 印章與防偽認證文字
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#94A3B8';
+      ctx.font = 'bold 14px "Noto Sans TC", sans-serif';
+      ctx.fillText('數感實驗室  | 互動學習系統 | Design：S.C. Kuo', w / 2, 770);
+
+      // 鋼印繪製
+      ctx.save();
+      ctx.translate(w - 180, 755);
+      ctx.rotate(-0.15);
+      ctx.strokeStyle = 'rgba(239, 68, 68, 0.7)';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(-65, -30, 130, 60);
+      ctx.fillStyle = 'rgba(239, 68, 68, 0.8)';
+      ctx.font = 'bold 15px "Noto Sans TC", sans-serif';
+      ctx.fillText('學期檢核通過', 0, -4);
+      ctx.font = '11px "Noto Sans TC", sans-serif';
+      ctx.fillText('OFFICIAL STAMP', 0, 16);
+      ctx.restore();
+
+      // 下載觸發
+      try {
+        const dataUrl = canvas.toDataURL('image/png');
+        const downloadLink = document.createElement('a');
+        downloadLink.download = `數感偵探結業證書_${studentProfile.className}_${studentProfile.seatNumber}號_${studentProfile.name}.png`;
+        downloadLink.href = dataUrl;
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        setTimeout(() => document.body.removeChild(downloadLink), 100);
+        showToast("成果證書圖片已成功匯出！請至相簿或下載資料夾查看！", "success");
+        playSound('celebrate');
+      } catch (err) {
+        console.error("匯出圖片失敗:", err);
+        showToast("匯出受瀏覽器沙盒限制", "warning");
+      }
+    }
+
+    /* ==========================================================================
+       6. 彈窗控制、動態 QR Code、全螢幕與系統啟動
+       ========================================================================== */
+    let qrcodeInstance = null;
+
+    function getValidCurrentUrl() {
+      const href = window.location.href;
+      if (href && href.startsWith('http')) return href;
+      return "https://math-sense.edu.tw/detective-graduation";
+    }
+
+    function openQrModal() {
+      const modal = document.getElementById('modal-qr');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+
+      const qrContainer = document.getElementById('qrcode-canvas');
+      qrContainer.innerHTML = '';
+      const currentUrl = getValidCurrentUrl();
+
+      try {
+        if (typeof QRCode !== 'undefined') {
+          qrcodeInstance = new QRCode(qrContainer, {
+            text: currentUrl,
+            width: 180,
+            height: 180,
+            colorDark: "#0F172A",
+            colorLight: "#FFFFFF",
+            correctLevel: QRCode.CorrectLevel.H
+          });
+        } else {
+          throw new Error("QRCode.js 未載入");
+        }
+      } catch (e) {
+        qrContainer.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(currentUrl)}" alt="QR Code" class="w-[180px] h-[180px] rounded-lg shadow">`;
+      }
+    }
+
+    function closeQrModal() {
+      const modal = document.getElementById('modal-qr');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function copyCurrentUrl() {
+      const text = getValidCurrentUrl();
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(() => {
+          showToast("目前網址已複製至剪貼簿！可直接貼在瀏覽器開啟！", "success");
+        }).catch(() => fallbackCopy(text));
+      } else {
+        fallbackCopy(text);
+      }
+    }
+
+    function fallbackCopy(text) {
+      const dummy = document.createElement('textarea');
+      dummy.value = text;
+      dummy.style.position = 'fixed';
+      dummy.style.left = '-9999px';
+      document.body.appendChild(dummy);
+      dummy.focus();
+      dummy.select();
+      try {
+        document.execCommand('copy');
+        showToast("目前網址已複製至剪貼簿！可直接貼在瀏覽器開啟！", "success");
+      } catch (e) {
+        showToast("複製失敗，請手動複製網址", "warning");
+      }
+      document.body.removeChild(dummy);
+    }
+
+    function openGuideModal() {
+      const modal = document.getElementById('modal-guide');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeGuideModal() {
+      const modal = document.getElementById('modal-guide');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function toggleFullScreen() {
+      const doc = document;
+      const docEl = document.documentElement;
+      const isFullscreen = doc.fullscreenElement || doc.webkitFullscreenElement;
+
+      if (!isFullscreen) {
+        if (docEl.requestFullscreen) {
+          docEl.requestFullscreen().catch(() => showToast("全螢幕切換受瀏覽器權限限制", "warning"));
+        } else if (docEl.webkitRequestFullscreen) {
+          docEl.webkitRequestFullscreen();
+        } else {
+          showToast("載具不支援全螢幕切換", "warning");
+        }
+      } else {
+        if (doc.exitFullscreen) {
+          doc.exitFullscreen().catch(() => {});
+        } else if (doc.webkitExitFullscreen) {
+          doc.webkitExitFullscreen();
+        }
+      }
+    }
+
+    function updateFullscreenIcon() {
+      const icon = document.getElementById('fullscreen-icon');
+      if (!icon) return;
+      const isFs = document.fullscreenElement || document.webkitFullscreenElement;
+      icon.className = isFs ? "fa-solid fa-compress text-lg" : "fa-solid fa-expand text-lg";
+    }
+
+    document.addEventListener('fullscreenchange', updateFullscreenIcon);
+    document.addEventListener('webkitfullscreenchange', updateFullscreenIcon);
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeQrModal();
+        closeGuideModal();
+      }
+    });
+
+    let toastTimer = null;
+    function showToast(message, type = "info") {
+      const toast = document.getElementById('toast');
+      const msg = document.getElementById('toast-message');
+      const icon = document.getElementById('toast-icon');
+
+      if (toastTimer) clearTimeout(toastTimer);
+
+      msg.textContent = message;
+      if (type === "warning") {
+        icon.className = "fa-solid fa-triangle-exclamation text-amber-400 text-lg";
+      } else if (type === "success") {
+        icon.className = "fa-solid fa-circle-check text-emerald-400 text-lg";
+      } else {
+        icon.className = "fa-solid fa-circle-info text-blue-400 text-lg";
+      }
+
+      toast.classList.remove('opacity-0', 'pointer-events-none');
+      toast.classList.add('opacity-100');
+
+      toastTimer = setTimeout(() => {
+        toast.classList.remove('opacity-100');
+        toast.classList.add('opacity-0', 'pointer-events-none');
+      }, 2600);
+    }
+
+    // 頁面初始化
+    window.addEventListener('DOMContentLoaded', () => {
+      initClassAndSeatOptions();
+      generateDefault4FContent();
+    });
+  </script>
+</body>
+</html>
